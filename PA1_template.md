@@ -120,11 +120,45 @@ hist(steps.per.day.corrected,breaks=10)
 
 ![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
+At first glance, the shape can be recognized as the first histogram drawn above. However, giving it a second look
+we can see that the median is stronger now (occurs far more often), and the peak at zero is almost gone. Extremes
+are counting less.
+
 
 ```r
 steps.median.corrected <- median(steps.per.day.corrected)
 steps.mean.corrected <- mean(steps.per.day.corrected)
 ```
-The median is now 1.0766189\times 10^{4}, the mean 1.0766189\times 10^{4}.
+The median is now 1.0766189\times 10^{4} which by now is the same as the mean - 1.0766189\times 10^{4}. This is
+to be expected: with the mean occuring more than 2000 times extra inside the dataset, this value is most likely the #1
+candidate for the new median.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+In order to study the difference in activity patterns between weekdays and weekend, we add a new factor variable to 
+the `activity` dataset. Because of locale differences we will *not* use the `weekdays` function, but `format` will do:
+
+```r
+activity$weekdaynumbers <- as.numeric(format(as.Date(activity$date), "%w"))
+activity$isWeekend <- ifelse(activity$weekdaynumbers %% 6 > 1, "weekday", "weekend")
+```
+
+Now we'll make a panel plot to show the differences between weekend and weekdays:
+
+```r
+ggplot(activity, aes(x=interval, y=steps, group=isWeekend)) + 
+  stat_summary(fun.y=mean, geom=c("line")) +
+  facet_wrap( ~ isWeekend)
+```
+
+```
+## Warning: Removed 1152 rows containing missing values (stat_summary).
+```
+
+```
+## Warning: Removed 1152 rows containing missing values (stat_summary).
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
+
+It is visible that during weekdays the activity level is more concentrated in a few peaks, whereas during 
+weekends it is more spread out. Also, the overall activity level during weekdays is higher dan it is during weekends.
